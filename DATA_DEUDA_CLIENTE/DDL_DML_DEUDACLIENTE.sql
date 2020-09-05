@@ -1,0 +1,327 @@
+-- SENTENCIA ELIMINAR TABLA
+DROP TABLE TMP_H_DEUDAS_CLIENTES;
+
+-- ESQUEMA LANDING
+--******************************************************
+-- Creacion de la tabla TMP_HA_DEUDAS_CLIENTES
+
+CREATE TABLE TMP_H_DEUDAS_CLIENTES(
+periodo           VARCHAR(100),
+Tip_Reg           VARCHAR(100),
+Cod_Sbs_Cli       VARCHAR(100),
+Cod_Empresa       VARCHAR(100),
+Tip_Credito       VARCHAR(100),
+Cod_Cuenta        VARCHAR(100),
+Condicion         VARCHAR(100),
+Saldo             VARCHAR(100),
+Clasificacion     VARCHAR(100),
+SitCre            VARCHAR(100),
+Tarj              VARCHAR(100),
+SldVig            VARCHAR(100)
+);
+
+select * from TMP_H_DEUDAS_CLIENTES
+
+-- ESQUEMA OPERACIONAL
+--******************************************************
+-- Creacion Tabla Esquema Operacional
+
+DROP TABLE H_DEUDAS_CLIENTES;
+
+CREATE TABLE H_DEUDAS_CLIENTES(
+  HDC_PERIODO         CHAR (6),
+  HDC_PRODUCTO        VARCHAR2(50),
+  HDC_SUBPRODUCTO     VARCHAR2(50),
+  HDC_COD_SBS_CLIENTE NUMERIC,
+  HDC_CODENTIDAD      NUMERIC,
+  HDC_TIP_CREDITO     CHAR (2),
+  HDC_COD_CUENTA      CHAR (14),
+  HDC_CONDICION       NUMERIC,
+  HDC_SALDO           FLOAT,
+  HDC_CLASIFICACION   VARCHAR (40)
+
+);
+
+-- PASANDO A LA DATA  A LA TABLA OPERACIONAL
+
+INSERT INTO H_DEUDAS_CLIENTES (
+      HDC_PERIODO,
+      HDC_PRODUCTO,HDC_SUBPRODUCTO,
+      HDC_COD_SBS_CLIENTE, HDC_CODENTIDAD, 
+      HDC_TIP_CREDITO, HDC_COD_CUENTA,
+      HDC_CONDICION, HDC_SALDO,
+      HDC_CLASIFICACION
+       )
+SELECT
+  PERIODO,
+  CASE  
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '09'    THEN 'Prestamo Pequenia Empresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '10'    THEN 'Prestamo MicroEmpresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'    THEN 'Prestamo Hipotecario'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'    THEN 'Prestamo Consumo'
+  ELSE 'Tarjeta Credito'
+   END PRODUCTO ,
+ 
+CASE 
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '09'                                                      THEN 'Prestamo Pequenia Empresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '10'                                                      THEN 'Prestamo MicroEmpresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'  AND SUBSTR(COD_CUENTA,7,2)  not in ('23','24','25') THEN 'Hipotecario Normal'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'  AND SUBSTR(COD_CUENTA,7,2)  in ('23','24','25')     THEN 'Hipotecario MiVivienda'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'   AND SUBSTR(COD_CUENTA,7,4) not in ('0602')         THEN 'Prestamo Efectivo'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'   AND SUBSTR(COD_CUENTA,7,4) in ('0602')             THEN 'Prestamo Vehicular'
+  WHEN  TIP_CREDITO in ('11','12')   AND SUBSTR(COD_CUENTA,7,4) ='02'                                            THEN 'Saldo Tartjeta de Credito'
+  WHEN  TIP_CREDITO in ('11','12')   AND SUBSTR(COD_CUENTA,4,3) ='923'                                           THEN 'Linea de Tarjeta de Credito'
+  ELSE  'Otros Subproductos'
+   END SUBPRODUCTO,
+  
+  TO_NUMBER(COD_SBS_CLI),
+  TO_NUMBER(COD_EMPRESA),
+  TIP_CREDITO, COD_CUENTA,
+  TO_NUMBER(CONDICION),  
+  TO_NUMBER( REPLACE(SALDO, '.', ',') ) ,
+  CASE
+    WHEN CLASIFICACION = '0'  THEN 'Normal'
+    WHEN CLASIFICACION = '1'  THEN 'CPP'
+    WHEN CLASIFICACION = '2'  THEN 'Deficiente'
+    WHEN CLASIFICACION = '3'  THEN 'Dudoso'
+    WHEN CLASIFICACION = '4'  THEN 'Pérdida'
+  ELSE  'Otro' END CLASIFICACION
+
+FROM 
+    TMP_H_DEUDAS_CLIENTES;
+
+--TRUNCATE TABLE PRO_DEUDA_CLIENTE;
+
+select * from  (select * from H_DEUDAS_CLIENTES)
+where rownum <=1000;
+
+
+
+
+
+   
+
+
+
+
+INSERT INTO PRO_DEUDA_CLIENTE (PERIODO,PRODUCTO,SUBPRODUCTO,COD_SBS_CLIENTE,CODENTIDAD,TIP_CREDITO,COD_CUENTA,CONDICION,SALDO,CLASIFICACION)
+SELECT PERIODO,
+CASE  
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '09'    THEN 'Prestamo Pequenia Empresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '10'    THEN 'Prestamo MicroEmpresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'    THEN 'Prestamo Hipotecario'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'    THEN 'Prestamo Consumo'
+  ELSE 'Tarjeta Credito'
+   END PRODUCTO ,
+ 
+CASE 
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '09'                                                      THEN 'Prestamo Pequenia Empresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '10'                                                      THEN 'Prestamo MicroEmpresa'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'  AND SUBSTR(COD_CUENTA,7,2)  not in ('23','24','25') THEN 'Hipotecario Normal'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '13'  AND SUBSTR(COD_CUENTA,7,2)  in ('23','24','25')     THEN 'Hipotecario MiVivienda'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'   AND SUBSTR(COD_CUENTA,7,4) not in ('0602')         THEN 'Prestamo Efectivo'
+  WHEN  SUBSTR(COD_CUENTA,1,2)='14'  AND TIP_CREDITO = '11'   AND SUBSTR(COD_CUENTA,7,4) in ('0602')             THEN 'Prestamo Vehicular'
+  WHEN  TIP_CREDITO in ('11','12')   AND SUBSTR(COD_CUENTA,7,4) ='02'                                            THEN 'Saldo Tartjeta de Credito'
+  WHEN  TIP_CREDITO in ('11','12')   AND SUBSTR(COD_CUENTA,4,3) ='923'                                           THEN 'Linea de Tarjeta de Credito'
+  ELSE  'Otros Subproductos'
+   END SUBPRODUCTO,
+COD_SBS_CLI,COD_EMPRESA,TIP_CREDITO,COD_CUENTA,CONDICION,  CAST(REPLACE(SALDO,'.',',') AS NUMBER)  SALDO , CLASIFICACION 
+FROM DATA_DEUDA_CLIENTE ;
+
+-- *****************************************************************************
+-- *****************************************************************************
+-- *****************************************************************************
+
+
+
+
+
+-- ANALISIS DE LOS CAMPOS 
+--******************************************************
+
+-- VISUALIZAR LA INFORMACIÓN 
+SELECT * FROM TMP_HA_DEUDAS_CLIENTES;
+
+--- CONTAR REGISTROS
+SELECT COUNT(*) FROM TMP_HA_DEUDAS_CLIENTES;
+-- 2099544
+
+-- ANALIZAR LA DATA:
+SELECT 
+PERIODO, TIP_REG,
+COD_SBS_CLI, COD_EMPRESA,
+TIP_CREDITO, COD_CUENTA,
+CONDICION, SALDO,
+CLASIFICACION, SITCRE, 
+TARJ, SLDVIG
+FROM 
+TMP_HA_DEUDAS_CLIENTES;
+
+---------------------------------------
+--- ANALIZANDO CADA ATRIBUTO PARA IDENTIFICAR EL TIPO DE DATO
+-- Y LA LONGITUD DEL REGISTRO:
+SELECT 
+MIN(PERIODO) AS PERIODO_MIN, MAX(PERIODO) AS PERIODO_MAX,
+MIN(COD_SBS_CLI) AS COD_SBS_CLI_MIN, MAX(COD_SBS_CLI) AS COD_SBS_CLI_MAX,
+MIN(COD_EMPRESA) AS COD_EMPRESA_MIN, MAX(COD_EMPRESA) AS COD_EMPRESA_MAX,
+MIN(TIP_CREDITO) AS TIP_CREDITO_MIN, MAX(TIP_CREDITO) AS TIP_CREDITO_MAX,
+MIN(COD_CUENTA) AS COD_CUENTA_MIN, MAX(COD_CUENTA) AS COD_CUENTA_MAX,
+MIN(CONDICION) AS CONDICION_MIN, MAX(CONDICION) AS CONDICION_MAX,
+MIN(SALDO) AS SALDO_MIN, MAX(SALDO) AS SALDO_MAX,
+MIN(CLASIFICACION) AS CLASIFICACION_MIN, MAX(CLASIFICACION) AS CLASIFICACION_MAX,
+MIN(SITCRE) AS SITCRE_MIN, MAX(SITCRE) AS SITCRE_MAX,
+MIN(TARJ) AS TARJ_MIN, MAX(TARJ) AS TARJ_MAX,
+MIN(SLDVIG) AS SLDVIG_MIN, MAX(SLDVIG) AS SLDVIG_MAX
+FROM 
+TMP_HA_DEUDAS_CLIENTES;
+
+
+-- LONGITUD DEL DATO
+SELECT distinct LENGTH(COD_SBS_CLI) FROM TMP_HA_DEUDAS_CLIENTES;
+SELECT MAX(LENGTH(COD_SBS_CLI)), MIN(LENGTH(COD_SBS_CLI)) FROM TMP_HA_DEUDAS_CLIENTES;
+
+SELECT 
+  MIN(LENGTH(TRIM(SLDVIG))) AS C_MIN,
+  MAX(LENGTH(TRIM(SLDVIG))) as C_MAX
+FROM TMP_HA_DEUDAS_CLIENTES;
+
+
+
+-- CONTAR VALORES NO NULLOS
+
+SELECT COUNT(SLDVIG) FROM TMP_HA_DEUDAS_CLIENTES 
+WHERE SLDVIG
+IS NOT NULL;
+
+
+-- IDENTIFICAR SU EXISTEN VALORES NULOS:
+SELECT SITCRE 
+FROM TMP_HA_DEUDAS_CLIENTES
+WHERE TRIM(SITCRE) IS NULL;
+
+
+-- CONTAR VALORES UNICOS 
+SELECT COUNT(DISTINCT SLDVIG) FROM TMP_HA_DEUDAS_CLIENTES;
+
+
+
+
+
+-- IDENTIFICANDO VALORES UNICOS
+SELECT COUNT(*) FROM
+(
+SELECT  SLDVIG  FROM TMP_HA_DEUDAS_CLIENTES
+GROUP BY SLDVIG
+HAVING COUNT(*) >1
+);
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
+select  hcl_documento_persona ,HCL_COD_SBS_CLIENTE, count(*)
+from ha_clientes
+group by hcl_documento_persona ,HCL_COD_SBS_CLIENTE;
+
+
+select * from ha_clientes where hcl_documento_persona='51181844';
+
+
+
+select * from HA_DEUDAS_CLIENTES where HDC_COD_SBS_CLIENTE = '60340579';
+
+
+------------------------------------------------------------------------------------------
+
+select count(*) from HA_DEUDAS_CLIENTES;
+
+select count(*) from ha_clientes;
+
+
+
+select distinct hdc_periodo
+from HA_DEUDAS_CLIENTES;
+
+select count(*) from HA_DEUDAS_CLIENTES where hdc_periodo ='201509';
+
+--- 177370 
+
+select count(*) from   ha_clientes where  hcl_periodo='201509';
+
+
+select a.hdc_periodo, b.hcl_periodo
+from HA_DEUDAS_CLIENTES a left join ha_clientes b  
+     on a.HDC_COD_SBS_CLIENTE=b.HCL_COD_SBS_CLIENTE
+    -- and a.hdc_periodo=b.HCL_PERIODO 
+     where a.hdc_periodo='201509'
+and rownum <=100;
+  --on a.hdc_periodo=b.HCL_PERIODO and 
+
+-- 177370
+
+
+
+
+
+
+
+
+/*******************************************************************/
+--ANALIZANDO LA INFORMACION DEL ATRIBUTO BANCO : 
+-- OBJETIVO : PERFILAMIENTO DATA PARA ASIGNAR EL TIPO DE DATO CORRECTO
+
+-- VISUALIZAR LA INFORMACIÓN 
+SELECT * FROM TMP_ENTIDADFINANCIERA;
+
+
+--- CONTAR REGISTROS
+SELECT COUNT(*) FROM TMP_ENTIDADFINANCIERA;
+-- 115
+
+-- ANALIZAR LA DATA:
+SELECT 
+CODENTIDAD,
+BANCO,
+BANCONOMBRECORTO,
+TIPOENTIDAD,
+TIPOCOMPETENCIA,
+TIPOCOMPETENCIA2
+FROM 
+TMP_ENTIDADFINANCIERA;
+
+---------------------------------------
+--- ANALIZANDO CADA ATRIBUTO PARA IDENTIFICAR EL TIPO DE DATO
+-- Y LA LONGITUD DEL REGISTRO:
+
+SELECT BANCO FROM TMP_ENTIDADFINANCIERA;
+
+SELECT 
+MIN(TRIM(BANCO) ), MAX(TRIM(BANCO) )
+FROM 
+TMP_ENTIDADFINANCIERA;
+
+
+-- LONGITUD DEL DATO
+SELECT LENGTH(BANCO ) FROM TMP_ENTIDADFINANCIERA
+
+SELECT MAX(LENGTH(BANCO)), MIN(LENGTH(BANCO)) FROM TMP_ENTIDADFINANCIERA
+
+SELECT MAX(LENGTH(TRIM(BANCO))), MIN(LENGTH(TRIM(BANCO))) FROM TMP_ENTIDADFINANCIERA
+
+
+SELECT BANCO FROM TMP_ENTIDADFINANCIERA;
+
+-- IDENTIFICAR SU EXISTEN VALORES NULOS:
+SELECT BANCO 
+FROM TMP_ENTIDADFINANCIERA
+WHERE TRIM(BANCO) IS NULL;
+
+
+-- IDENTIFICANDO VALORES UNICOS
+SELECT BANCO FROM TMP_ENTIDADFINANCIERA
+GROUP BY BANCO
+HAVING COUNT(*) > 1
+
+

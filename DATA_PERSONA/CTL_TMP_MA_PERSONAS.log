@@ -1,0 +1,56 @@
+
+SQL*Loader: Release 11.2.0.2.0 - Production on Vie Sep 4 21:24:48 2020
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   CTL_TMP_MA_PERSONAS.ctl
+Data File:      DATA_PERSONA.txt
+  Bad File:     DATA_PERSONA.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TMP_MA_PERSONAS, loaded from every logical record.
+Insert option in effect for this table: TRUNCATE
+TRAILING NULLCOLS option in effect
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+NUMDOC                              FIRST     *   |       CHARACTER            
+DIGVER                               NEXT     *   |       CHARACTER            
+GRPVOT                               NEXT     *   |       CHARACTER            
+UBIGEO                               NEXT     *   |       CHARACTER            
+APPATERNO                            NEXT     *   |       CHARACTER            
+APMATERNO                            NEXT     *   |       CHARACTER            
+NOMBRES                              NEXT     *   |       CHARACTER            
+FECNAC                               NEXT     *   |       CHARACTER            
+SEXO                                 NEXT     *   |       CHARACTER            
+
+
+Table TMP_MA_PERSONAS:
+  28525 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 148608 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:         28525
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Vie Sep 04 21:24:48 2020
+Run ended on Vie Sep 04 21:24:49 2020
+
+Elapsed time was:     00:00:00.95
+CPU time was:         00:00:00.19

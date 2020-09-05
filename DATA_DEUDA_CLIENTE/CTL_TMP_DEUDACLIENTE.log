@@ -1,0 +1,59 @@
+
+SQL*Loader: Release 11.2.0.2.0 - Production on Vie Sep 4 21:31:03 2020
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   CTL_TMP_DEUDACLIENTE.ctl
+Data File:      DATA_DEUDACLIENTE.txt
+  Bad File:     DATA_DEUDACLIENTE.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 1
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TMP_H_DEUDAS_CLIENTES, loaded from every logical record.
+Insert option in effect for this table: TRUNCATE
+TRAILING NULLCOLS option in effect
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+PERIODO                             FIRST     *  WHT   "  CHARACTER            
+TIP_REG                              NEXT     *  WHT   "  CHARACTER            
+COD_SBS_CLI                          NEXT     *  WHT   "  CHARACTER            
+COD_EMPRESA                          NEXT     *  WHT   "  CHARACTER            
+TIP_CREDITO                          NEXT     *  WHT   "  CHARACTER            
+COD_CUENTA                           NEXT     *  WHT   "  CHARACTER            
+CONDICION                            NEXT     *  WHT   "  CHARACTER            
+SALDO                                NEXT     *  WHT   "  CHARACTER            
+CLASIFICACION                        NEXT     *  WHT   "  CHARACTER            
+SITCRE                               NEXT     *  WHT   "  CHARACTER            
+TARJ                                 NEXT     *  WHT   "  CHARACTER            
+SLDVIG                               NEXT     *  WHT   "  CHARACTER            
+
+
+Table TMP_H_DEUDAS_CLIENTES:
+  2099544 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 198144 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          1
+Total logical records read:       2099544
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Vie Sep 04 21:31:03 2020
+Run ended on Vie Sep 04 21:32:12 2020
+
+Elapsed time was:     00:01:08.78
+CPU time was:         00:00:22.20
